@@ -7,17 +7,15 @@ def get_data():
     intents = []
     sentences = []
     slots = []
-    with open(train_file, 'r') as fp:
-        train_data = eval(fp.read())
-        for t in train_data:
-            print(t)
-            sentence = t['text']
-            sentences.append(sentence)
-            domain = t['domain']
-            domains.append(domain)
-            intent = t['intent']
-            intents.append(intent)
-            slots.extend(t['slots'].keys())
+    for line in open(train_file, 'r'):
+        t = json.loads(line.rstrip())
+        sentence = t['text']
+        sentences.append(sentence)
+        domain = t['domain']
+        domains.append(domain)
+        intent = t['intent']
+        intents.append(intent)
+        slots.extend(t['slots'].keys())
 
     domains = list(set(domains))
     intents = list(set(intents))

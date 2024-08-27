@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch
 import numpy as np
 import os
+import json
 from seqeval.metrics.sequence_labeling import get_entities
 
 from config import Args
@@ -211,13 +212,15 @@ if __name__ == '__main__':
         trainer.test(test_loader)
 
     if args.do_predict:
-        with open('./data/test.json','r') as fp:
-            pred_data = eval(fp.read())
-            for i,p_data in enumerate(pred_data):
-                text = p_data['text']
-                print('=================================')
-                print(text)
-                trainer.predict(text)
-                print('=================================')
-                if i == 10:
-                    break
+        import time
+        for line in open('./data/test.json','r'):
+            pred_data = json.loads(line.rstrip())
+            text = pred_data['text']
+            print('=================================')
+            print(text)
+            start_time = time.perf_counter()
+            trainer.predict(text)
+            end_time = time.perf_counter()
+            elapsed_time_ms = (end_time - start_time) * 1000
+            print(f'Prediction time: {elapsed_time_ms:.3f} milliseconds')
+            print('=================================')

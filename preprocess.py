@@ -2,6 +2,7 @@ import re
 import torch
 from transformers import BertTokenizer
 from config import Args
+import json
 
 
 class InputExample:
@@ -30,9 +31,8 @@ class Processor:
     @classmethod
     def get_examples(cls, path, set_type):
         raw_examples = []
-        with open(path, 'r') as fp:
-            data = eval(fp.read())
-        for i, d in enumerate(data):
+        for d in open(path, 'r'):
+            d = json.loads(d.rstrip())
             text = d['text']
             seq_label = d['intent']
             token_label = d['slots']
@@ -56,7 +56,7 @@ def convert_example_to_feature(ex_idx, example, tokenizer, config):
     seq_label_ids = config.seqlabel2id[seq_label]
     token_label_ids = [0] * len(text)
     for k, v in token_label.items():
-        # print(k,v, text)
+        print(k,v, text)
         re_res = re.finditer(v, text)
         for span in re_res:
             entity = span.group()
